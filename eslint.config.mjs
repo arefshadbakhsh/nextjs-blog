@@ -9,17 +9,22 @@ export default [
   {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     rules: {
-      quotes: ["error", "double"], // Enforces double quotes
-      "comma-dangle": ["error", "always-multiline"], // Requires trailing commas where valid in ES5 (objects, arrays, etc.)
-      semi: ["error", "always"], // Requires semicolons
-      "react/jsx-uses-react": "off", // If using React 17+ (optional depending on your setup)
-      "react/react-in-jsx-scope": "off", // Disable React import requirement in JSX (for React 17+)
+      quotes: ["error", "double"],
+      "comma-dangle": ["error", "always-multiline"],
+      semi: ["error", "always"],
+      "react/jsx-uses-react": "off",
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }],
       "sort-imports": [
         "error",
         {
           "ignoreCase": true,
           "ignoreDeclarationSort": true,
         },
+      ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" },
       ],
     },
   },

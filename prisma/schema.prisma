@@ -13,12 +13,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id    Int @id @default(autoincrement())
-  firstName  String
+  id        Int    @id @default(autoincrement())
+  firstName String
   lastName  String
-  username String @unique
-  password String
+  username  String @unique
+  email  String @unique
+  password  String
+  post Post[]
+}
 
+model Category {
+  id      Int      @id @default(autoincrement())
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+  name    String
+  Post Post[]
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  created   DateTime @default(now())
+  updated   DateTime @updatedAt
+  title     String
+  published Boolean  @default(false)
+  author User @relation(fields: [authorId], references: [id])
+  authorId Int
+  category  Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
 }
