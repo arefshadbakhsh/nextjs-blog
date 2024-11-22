@@ -11,6 +11,7 @@ import Link from "next/link";
 import ButtonNormal from "@/component/general/button-normal";
 import { login } from "@/app/actions/auth";
 import toast from "react-hot-toast";
+import {EyeIcon, EyeSlashIcon} from "@heroicons/react/24/outline";
 
 // Define Zod schema for form validation
 const loginSchema = z.object({
@@ -23,6 +24,8 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const form = useForm<LoginForm>({
     mode: "all",
     resolver: zodResolver(loginSchema),
@@ -69,19 +72,32 @@ export default function LoginForm() {
           </div>
           {/*endregion*/}
 
-          {/*region Password*/}
+          {/*region Password */}
           <FormFieldLabel>Password</FormFieldLabel>
-          <Input
-            crossOrigin={undefined}
-            {...form.register("password")}
-            type="password"
-            size="lg"
-            label="Password"
-            name="password"
-            error={!!form.formState.errors.password} />
+          <div className="relative">
+            <Input
+                crossOrigin={undefined}
+                {...form.register("password")}
+                type={showPassword ? "text" : "password"}
+                size="lg"
+                label="Password"
+                name="password"
+                error={!!form.formState.errors.password}
+            />
+            <div
+                className="absolute right-3 top-3 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5 text-gray-600"/>
+              ) : (
+                  <EyeIcon className="h-5 w-5 text-gray-600"/>
+              )}
+            </div>
+          </div>
           <div className="h-2">
             {form.formState.errors.password && (
-              <FormFieldError>{form.formState.errors.password.message}</FormFieldError>
+                <FormFieldError>{form.formState.errors.password.message}</FormFieldError>
             )}
           </div>
           {/*endregion*/}
@@ -98,8 +114,8 @@ export default function LoginForm() {
         </form>
       </Card>
 
-      <Link href="/forgot-password" className="w-1/3 text-blue-700">
-        Forgot password?
+      <Link href="/register" className="w-1/3 text-blue-700">
+        Register
       </Link>
     </div>
   );

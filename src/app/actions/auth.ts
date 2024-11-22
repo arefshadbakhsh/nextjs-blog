@@ -30,7 +30,23 @@ export async function registerUser(body: RegisterRequestDto) {
     },
   });
 
-  return _user;
+  // Generate a JWT token
+  const token = jwt.sign(
+      { id: _user.id, email: _user.email }, // Payload
+      SECRET_KEY!, // Secret key
+      { expiresIn: process.env.EXPIRE_IN }, // Token expiration
+  );
+
+  // Remove sensitive data from user before returning
+  const safeUser = sanitizeUser(_user);
+
+  // Return a success response
+  return {
+    status: 200,
+    message: "Login successful.",
+    user: safeUser,
+    token,
+  };
 }
 
 export async function login(body: LoginRequestDto) {
@@ -60,7 +76,7 @@ export async function login(body: LoginRequestDto) {
     const token = jwt.sign(
       { id: user.id, email: user.email }, // Payload
       SECRET_KEY!, // Secret key
-      { expiresIn: "1h" }, // Token expiration
+      { expiresIn: process.env.EXPIRE_IN }, // Token expiration
     );
 
     // Remove sensitive data from user before returning
