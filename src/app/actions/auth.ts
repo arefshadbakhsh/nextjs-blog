@@ -31,11 +31,7 @@ export async function registerUser(body: RegisterRequestDto) {
   });
 
   // Generate a JWT token
-  const token = jwt.sign(
-      { id: _user.id, email: _user.email }, // Payload
-      SECRET_KEY!, // Secret key
-      { expiresIn: process.env.EXPIRE_IN }, // Token expiration
-  );
+  const token = sign(_user);
 
   // Remove sensitive data from user before returning
   const safeUser = sanitizeUser(_user);
@@ -73,11 +69,7 @@ export async function login(body: LoginRequestDto) {
     }
 
     // Generate a JWT token
-    const token = jwt.sign(
-      { id: user.id, email: user.email }, // Payload
-      SECRET_KEY!, // Secret key
-      { expiresIn: process.env.EXPIRE_IN }, // Token expiration
-    );
+    const token = sign(user);
 
     // Remove sensitive data from user before returning
     const safeUser = sanitizeUser(user);
@@ -102,4 +94,12 @@ const sanitizeUser = (user: User) => {
   // Destructure the password, but use an underscore to indicate it's intentionally unused
   const { password: _password, ...sanitizedUser } = user;
   return sanitizedUser;
+};
+
+const sign = (user: User) => {
+  return jwt.sign(
+    { id: user.id, email: user.email }, // Payload
+    SECRET_KEY!, // Secret key
+    { expiresIn: process.env.EXPIRE_IN }, // Token expiration
+  );
 };
