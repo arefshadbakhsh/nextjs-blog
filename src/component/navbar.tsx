@@ -26,7 +26,6 @@ import {
   TagIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/solid";
-import { User } from "@prisma/client";
 import ButtonLink from "@/component/general/button-link";
 import { logout } from "@/app/actions/auth";
 
@@ -185,7 +184,7 @@ function NavList() {
   );
 }
 
-export function MegaNavbar(user?: User) {
+export function MegaNavbar(props?: { username?: string, email?: string }) {
   const [openNav, setOpenNav] = React.useState(false);
 
   React.useEffect(() => {
@@ -238,7 +237,7 @@ export function MegaNavbar(user?: User) {
         <NavList />
         <div className="flex w-full justify-between items-center gap-2 lg:hidden">
           {
-            user ?
+            props?.username ?
               <Button onClick={onLogout}>
                 Logout
               </Button>

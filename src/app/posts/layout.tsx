@@ -5,6 +5,7 @@ import "@/app/globals.css";
 import AuthProvider from "@/component/auth/auth-provider";
 import { MegaNavbar } from "@/component/navbar";
 import { getCurrentUser } from "@/app/actions/user";
+import { redirect } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,12 +13,15 @@ const inter = Inter({ subsets: ["latin"] });
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
 
-  console.log(user);
+  if (!user) {
+    redirect("/login");
+  }
+
   return (
     <html lang="en">
     <body className={inter.className}>
     <AuthProvider>
-      <MegaNavbar user={user} />
+      <MegaNavbar username={user.username} email={user.email} />
       {children}
     </AuthProvider>
     </body>
