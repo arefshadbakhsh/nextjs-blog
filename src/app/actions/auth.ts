@@ -9,6 +9,8 @@ import { usernameStandard } from "@/lib/utill-functions/standard-username";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { User } from "@prisma/client";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 dotenv.config();
 
@@ -32,6 +34,8 @@ export async function registerUser(body: RegisterRequestDto) {
 
   // Generate a JWT token
   const token = sign(_user);
+
+  setCookie(token);
 
   // Remove sensitive data from user before returning
   const safeUser = sanitizeUser(_user);
@@ -71,6 +75,8 @@ export async function login(body: LoginRequestDto) {
     // Generate a JWT token
     const token = sign(user);
 
+    setCookie(token);
+
     // Remove sensitive data from user before returning
     const safeUser = sanitizeUser(user);
 
@@ -90,16 +96,46 @@ export async function login(body: LoginRequestDto) {
   }
 }
 
+export async function logout() {
+  const cookiesStore = cookies();
+  cookiesStore.delete(process.env.AUTH_TOKEN_NAME!);
+  redirect("/login");
+}
+
+export async function validateUserSession() {
+  const authCookie = getAuthCookie();
+  if (!authCookie) {
+    redirect("/login");
+  }
+}
+
 const sanitizeUser = (user: User) => {
   // Destructure the password, but use an underscore to indicate it's intentionally unused
   const { password: _password, ...sanitizedUser } = user;
   return sanitizedUser;
 };
 
-const sign = (user: User) => {
+const sign = (user: User): string => {
   return jwt.sign(
     { id: user.id, email: user.email }, // Payload
     SECRET_KEY!, // Secret key
     { expiresIn: process.env.EXPIRE_IN }, // Token expiration
   );
+};
+
+const setCookie = (token: string) => {
+  // Set the JWT token in a cookie
+  const cookieStore = cookies();
+  cookieStore.set(process.env.AUTH_TOKEN_NAME!, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24, // 1 day
+  });
+};
+
+const getAuthCookie = () => {
+  const cookieStore = cookies();
+  return cookieStore.get(process.env.AUTH_TOKEN_NAME!);
 };
