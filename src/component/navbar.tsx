@@ -27,6 +27,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/solid";
 import ButtonLink from "@/component/general/button-link";
+import { logout } from "@/app/actions/auth";
 
 const navListMenuItems = [
   {
@@ -183,7 +184,7 @@ function NavList() {
   );
 }
 
-export function MegaNavbar() {
+export function MegaNavbar(props?: { username?: string, email?: string }) {
   const [openNav, setOpenNav] = React.useState(false);
 
   React.useEffect(() => {
@@ -192,6 +193,10 @@ export function MegaNavbar() {
       () => window.innerWidth >= 960 && setOpenNav(false),
     );
   }, []);
+
+  const onLogout = async () => {
+    await logout();
+  };
 
   return (
     <Navbar className="mx-auto max-w-screen-xl px-4 py-2">
@@ -231,12 +236,21 @@ export function MegaNavbar() {
       <Collapse open={openNav}>
         <NavList />
         <div className="flex w-full justify-between items-center gap-2 lg:hidden">
-          <ButtonLink className='w-[100px]' href="/login" color="blue-gray">
-            Log In
-          </ButtonLink>
-          <ButtonLink href="/register" color="gray">
-            register
-          </ButtonLink>
+          {
+            props?.username ?
+              <Button onClick={onLogout}>
+                Logout
+              </Button>
+              :
+              <>
+                <ButtonLink className="w-[100px]" href="/login" color="blue-gray">
+                  Log In
+                </ButtonLink>
+                <ButtonLink href="/register" color="gray">
+                  register
+                </ButtonLink>
+              </>
+          }
         </div>
       </Collapse>
     </Navbar>
