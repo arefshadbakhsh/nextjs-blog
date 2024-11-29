@@ -38,9 +38,7 @@ export default function LoginForm() {
 
     try {
       const result = await login(data);
-      console.log("Sign in successful:", result);
       if (!result.user) {
-        console.log("error ");
         toast.error(result.message);
       } else if (result.user) {
         toast.success("Login Successful");
